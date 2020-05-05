@@ -5,15 +5,10 @@ import javax.persistence.Entity;
 import com.example.app.data.base.AbstractEntity;
 
 @Entity
-public class Person extends AbstractEntity<Integer> {
+public class Person extends AbstractEntity {
 
     private String firstName, lastName;
     private int age;
-
-    public Integer getId() {
-        // Workaround for https://github.com/vaadin/flow/issues/8238
-        return super.getId();
-    }
 
     public String getFirstName() {
         return firstName;

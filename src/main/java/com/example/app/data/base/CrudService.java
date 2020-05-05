@@ -1,4 +1,4 @@
-package com.example.app.data;
+package com.example.app.data.base;
 
 import java.util.List;
 import java.util.Optional;

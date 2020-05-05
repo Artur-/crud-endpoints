@@ -1,7 +1,7 @@
 package com.example.app;
 
-import com.example.app.data.Person;
-import com.example.app.data.PersonRepository;
+import com.example.app.data.entity.Person;
+import com.example.app.data.service.PersonRepository;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;

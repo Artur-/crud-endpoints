@@ -1,4 +1,6 @@
-package com.example.app.data;
+package com.example.app.data.service;
+
+import com.example.app.data.entity.Person;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

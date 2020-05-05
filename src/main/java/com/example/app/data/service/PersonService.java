@@ -1,4 +1,7 @@
-package com.example.app.data;
+package com.example.app.data.service;
+
+import com.example.app.data.base.CrudService;
+import com.example.app.data.entity.Person;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,8 @@
-package com.example.app.data;
+package com.example.app.data.entity;
 
 import javax.persistence.Entity;
+
+import com.example.app.data.base.AbstractEntity;
 
 @Entity
 public class Person extends AbstractEntity<Integer> {

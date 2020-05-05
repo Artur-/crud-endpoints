@@ -1,4 +1,4 @@
-package com.example.app.data;
+package com.example.app.data.base;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +7,7 @@ public abstract class CrudEndpointWithService<T, ID> implements CrudEndpoint<T, 
 
     protected abstract CrudService<T, ID> getService();
 
+    @Override
     public List<T> list() {
         return getService().list();
     }

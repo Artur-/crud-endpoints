@@ -1,8 +1,11 @@
-package com.example.app.data;
+package com.example.app.data.endpoint;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.example.app.data.base.CrudEndpointWithService;
+import com.example.app.data.entity.Person;
+import com.example.app.data.service.PersonService;
 import com.vaadin.flow.server.connect.Endpoint;
 import com.vaadin.flow.server.connect.auth.AnonymousAllowed;
 

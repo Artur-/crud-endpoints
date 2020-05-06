@@ -63,7 +63,10 @@
     "typescript": "3.8.3",
     "terser": "4.6.7",
     "progress-webpack-plugin": "0.0.24",
-    "lit-element": "2.3.1"
+    "lit-element": "2.3.1",
+    "validator": "12.0.0",
+    "lit-html": "1.2.1",
+    "@types/validator": "10.11.3"
   },
   "vaadin": {
     "dependencies": {
@@ -127,8 +130,11 @@
       "webpack-dev-server": "3.10.3",
       "terser": "4.6.7",
       "progress-webpack-plugin": "0.0.24",
-      "lit-element": "2.3.1"
+      "lit-element": "2.3.1",
+      "validator": "12.0.0",
+      "lit-html": "1.2.1",
+      "@types/validator": "10.11.3"
     },
-    "hash": "677117860532305d7d17477d165ce461b255961a56df03dddf9e6c12c926867e"
+    "hash": "558cddd098332d862ee9825f382b59a703c86248b85bfdec26b847c32145d7e4"
   }
 }

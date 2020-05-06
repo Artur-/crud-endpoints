@@ -1,12 +1,18 @@
+import { createMockEndpoint, MockDataType } from "./mocker";
 import { css, customElement, html, LitElement, property } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
-import Person from "./generated/com/example/app/data/Person";
-import * as PersonEndpoint from "./generated/PersonEndpoint";
+
+import Entity from "./generated/com/example/app/data/entity/Person";
+import * as Endpoint from "./generated/PersonEndpoint";
+
+// const Endpoint = createMockEndpoint(EntityMetadata);
+
+import { generateDiv } from "./generator";
 
 @customElement("my-view")
 export class MyView extends LitElement {
   @property({ type: Array })
-  items: Person[] = [];
+  items: Entity[] = [];
 
   static get styles() {
     return css``;
@@ -17,11 +23,7 @@ export class MyView extends LitElement {
         ${repeat(
           this.items,
           (item) => item.id,
-          (item) =>
-            html` <div>
-              ${item.firstName} ${item.lastName} is ${item.age} year(s) old
-              <button @click="${() => this.age(item)}">Age</button>
-            </div>`
+          (item) => html`${generateDiv(item, this)}`
         )}
       </div>
     `;
@@ -29,11 +31,11 @@ export class MyView extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.items = await PersonEndpoint.list();
+    this.items = await Endpoint.list();
   }
-  async age(person: Person) {
+  async age(person: Entity) {
     person.age++;
-    await PersonEndpoint.update(person);
+    await Endpoint.update(person);
     this.items = this.items.map((p) => (p.id == person.id ? person : p));
   }
 }

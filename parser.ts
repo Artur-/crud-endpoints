@@ -33,18 +33,25 @@ const createTemplate = (
     const importDeclaration = node as ts.ImportDeclaration;
     let matched = false;
     const importNode = importDeclaration.importClause;
-    if (
-      importNode.namedBindings &&
-      ts.isNamedImports(importNode.namedBindings)
-    ) {
-      const namedImports: ts.NamedImports = importNode.namedBindings as ts.NamedImports;
+    if (importNode.namedBindings) {
+      if (ts.isNamedImports(importNode.namedBindings)) {
+        const namedImports = importNode.namedBindings as ts.NamedImports;
 
-      namedImports.elements.forEach((element) => {
-        const importedIdentifier = element.name.text;
-        if (identifiers.includes(importedIdentifier)) {
+        namedImports.elements.forEach((element) => {
+          const importedIdentifier = element.name.text;
+          if (identifiers.includes(importedIdentifier)) {
+            matched = true;
+          }
+        });
+      } else if (ts.isNamespaceImport(importNode.namedBindings)) {
+        const namespaceImport = importNode.namedBindings as ts.NamespaceImport;
+        console.log(namespaceImport.name.text);
+        if (identifiers.includes(namespaceImport.name.text)) {
           matched = true;
         }
-      });
+      }
+    } else if (importNode.name && identifiers.includes(importNode.name.text)) {
+      matched = true;
     }
 
     return matched;
@@ -56,6 +63,12 @@ const createTemplate = (
       isImportForIdentifier(node, Object.keys(replacements))
     ) {
       // Remove generator imports
+      codeChanges.push({ node: node, replacement: "" });
+    }
+    if (
+      type == Type.PREVIEW &&
+      isImportForIdentifier(node, ["Entity", "Endpoint"])
+    ) {
       codeChanges.push({ node: node, replacement: "" });
     }
     if (type == Type.CODE && ts.isTemplateExpression(node)) {
@@ -70,14 +83,6 @@ const createTemplate = (
         codeChanges.push({ node, replacement });
       }
     }
-
-    // Preview
-    // No Entity import
-    // Entity field type => any
-    // Replace import  * as Endpoint
-    // ->
-    // import { createMockEndpoint } from "./mocker";
-    // const Endpoint = createMockEndpoint((this as any)._entityMetadata);
   };
 
   const visit = (node: ts.Node, visitor: { (node: ts.Node): void }) => {
@@ -88,6 +93,21 @@ const createTemplate = (
   };
 
   visit(source, visitor);
+  if (type == Type.PREVIEW) {
+    codeChanges.push({
+      node: { pos: -1, end: -1 },
+      replacement: 'import { createMockEndpoint } from "./mocker";\n',
+    });
+    codeChanges.push({
+      node: { pos: -1, end: -1 },
+      replacement:
+        "const Endpoint = createMockEndpoint((this as any)._entityMetadata);\n",
+    });
+    codeChanges.push({
+      node: { pos: -1, end: -1 },
+      replacement: "type Entity = any;\n",
+    });
+  }
 
   let newCode = source.getFullText();
 

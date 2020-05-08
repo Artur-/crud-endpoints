@@ -27,9 +27,14 @@ public class MainView extends VerticalLayout {
 
     public MainView(@Autowired PersonRepository repo) {
         Person person = new Person();
-        person.setFirstName("First");
-        person.setLastName("Last");
-        person.setAge(123);
+        person.setFirstName("John");
+        person.setLastName("Doe");
+        person.setAge(45);
+        repo.save(person);
+        person = new Person();
+        person.setFirstName("Jane");
+        person.setLastName("Moe");
+        person.setAge(19);
         repo.save(person);
     }
 

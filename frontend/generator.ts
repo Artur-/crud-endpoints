@@ -19,7 +19,7 @@ export const generateDivCode = (
   metadata: any
 ): string => {
   const content = Object.keys(metadata).map((fieldName) => {
-    return "<span>${" + propertyName + "[" + fieldName + "]}</span>";
+    return "<span>${" + propertyName + "." + fieldName + "}</span>";
   });
 
   return `<div>${content.join("")}</div>`;

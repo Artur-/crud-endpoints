@@ -16,7 +16,7 @@ exports.generateDiv = lit_html_1.directive(function (entity, metadata) { return 
 }; });
 exports.generateDivCode = function (propertyName, metadata) {
     var content = Object.keys(metadata).map(function (fieldName) {
-        return "<span>${" + propertyName + "[" + fieldName + "]}</span>";
+        return "<span>${" + propertyName + "." + fieldName + "}</span>";
     });
     return "<div>" + content.join("") + "</div>";
 };

@@ -14,6 +14,7 @@ const createTemplate = (
   code: string,
   replacements: any,
   meta: any,
+  endpoint: any,
   type: Type
 ): string => {
   const codeChanges = [];
@@ -45,7 +46,6 @@ const createTemplate = (
         });
       } else if (ts.isNamespaceImport(importNode.namedBindings)) {
         const namespaceImport = importNode.namedBindings as ts.NamespaceImport;
-        console.log(namespaceImport.name.text);
         if (identifiers.includes(namespaceImport.name.text)) {
           matched = true;
         }
@@ -65,11 +65,23 @@ const createTemplate = (
       // Remove generator imports
       codeChanges.push({ node: node, replacement: "" });
     }
-    if (
-      type == Type.PREVIEW &&
-      isImportForIdentifier(node, ["Entity", "Endpoint"])
-    ) {
-      codeChanges.push({ node: node, replacement: "" });
+    if (isImportForIdentifier(node, ["Entity"])) {
+      let replacement: string;
+      if (type == Type.CODE) {
+        replacement = 'import Entity from "' + endpoint.entity + '";\n';
+      } else {
+        replacement = "";
+      }
+      codeChanges.push({ node, replacement });
+    } else if (isImportForIdentifier(node, ["Endpoint"])) {
+      let replacement: string;
+      if (type == Type.CODE) {
+        replacement =
+          'import * as Endpoint from "' + endpoint.endpoint + '";\n';
+      } else {
+        replacement = "";
+      }
+      codeChanges.push({ node, replacement });
     }
     if (type == Type.CODE && ts.isTemplateExpression(node)) {
       // Replace generator calls with result
@@ -79,7 +91,8 @@ const createTemplate = (
       const argumentNames = exp.arguments.map((node) => node.text);
 
       if (replacements[functionName]) {
-        const replacement = replacements[functionName](argumentNames[0], meta);
+        const replacement =
+          "`" + replacements[functionName](argumentNames[0], meta) + "`";
         codeChanges.push({ node, replacement });
       }
     }
@@ -95,18 +108,20 @@ const createTemplate = (
   visit(source, visitor);
   if (type == Type.PREVIEW) {
     codeChanges.push({
-      node: { pos: -1, end: -1 },
+      node: { pos: 0, end: 0 },
       replacement: 'import { createMockEndpoint } from "./mocker";\n',
     });
     codeChanges.push({
-      node: { pos: -1, end: -1 },
+      node: { pos: 0, end: 0 },
       replacement:
         "const Endpoint = createMockEndpoint((this as any)._entityMetadata);\n",
     });
     codeChanges.push({
-      node: { pos: -1, end: -1 },
+      node: { pos: 0, end: 0 },
       replacement: "type Entity = any;\n",
     });
+  }
+  if (type == Type.CODE) {
   }
 
   let newCode = source.getFullText();
@@ -117,9 +132,9 @@ const createTemplate = (
   });
   codeChanges.forEach((codeChange) => {
     newCode =
-      newCode.substring(0, codeChange.node.pos + 1) +
+      newCode.substring(0, codeChange.node.pos) +
       codeChange.replacement +
-      newCode.substring(codeChange.node.end + 1);
+      newCode.substring(codeChange.node.end);
   });
 
   return newCode;
@@ -133,7 +148,10 @@ const createTemplate = (
     lastName: { type: "String" },
     age: { type: "Integer" },
   };
-
+  const endpoint = {
+    entity: "./generated/com/example/app/data/entity/Person",
+    endpoint: "./generated/PersonEndpoint",
+  };
   const replacements = {
     generateDiv: generateDivCode,
   };
@@ -142,10 +160,10 @@ const createTemplate = (
 
   fs.writeFileSync(
     "./frontend/my-view-preview.ts",
-    createTemplate(originalCode, replacements, meta, Type.PREVIEW)
+    createTemplate(originalCode, replacements, meta, {}, Type.PREVIEW)
   );
   fs.writeFileSync(
     "./frontend/my-view-final.ts",
-    createTemplate(originalCode, replacements, meta, Type.CODE)
+    createTemplate(originalCode, replacements, meta, endpoint, Type.CODE)
   );
 }

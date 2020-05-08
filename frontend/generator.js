@@ -9,10 +9,13 @@ var camelCaseToHumanReadable = function (camelCase) {
     return camelCase;
 };
 exports.generateDiv = lit_html_1.directive(function (entity, metadata) { return function (part) {
-    var contents = Object.keys(metadata).map(function (fieldName) {
-        return lit_html_1.html(templateObject_1 || (templateObject_1 = __makeTemplateObject(["<span>", "</span> "], ["<span>", "</span> "])), entity[fieldName]);
-    });
-    part.setValue(lit_html_1.html(templateObject_2 || (templateObject_2 = __makeTemplateObject(["<div>", "</div>"], ["<div>", "</div>"])), contents));
+    var contents = [lit_html_1.html(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])))];
+    if (metadata) {
+        contents = Object.keys(metadata).map(function (fieldName) {
+            return lit_html_1.html(templateObject_2 || (templateObject_2 = __makeTemplateObject(["<span>", "</span> "], ["<span>", "</span> "])), entity[fieldName]);
+        });
+    }
+    part.setValue(lit_html_1.html(templateObject_3 || (templateObject_3 = __makeTemplateObject(["<div>", "</div>"], ["<div>", "</div>"])), contents));
 }; });
 exports.generateDivCode = function (propertyName, metadata) {
     var content = Object.keys(metadata).map(function (fieldName) {
@@ -22,11 +25,11 @@ exports.generateDivCode = function (propertyName, metadata) {
 };
 exports.generateGridColumns = lit_html_1.directive(function (metadata) { return function (part) {
     var content = Object.keys(metadata).map(function (fieldName) {
-        return lit_html_1.html(templateObject_3 || (templateObject_3 = __makeTemplateObject([" <vaadin-grid-column\n        path=\"", "\"\n        header=\"", "\"\n      ></vaadin-grid-column>"], [" <vaadin-grid-column\n        path=\"", "\"\n        header=\"", "\"\n      ></vaadin-grid-column>"])), fieldName, camelCaseToHumanReadable(fieldName));
+        return lit_html_1.html(templateObject_4 || (templateObject_4 = __makeTemplateObject([" <vaadin-grid-column\n        path=\"", "\"\n        header=\"", "\"\n      ></vaadin-grid-column>"], [" <vaadin-grid-column\n        path=\"", "\"\n        header=\"", "\"\n      ></vaadin-grid-column>"])), fieldName, camelCaseToHumanReadable(fieldName));
     });
-    part.setValue(lit_html_1.html(templateObject_4 || (templateObject_4 = __makeTemplateObject(["", ""], ["", ""])), content));
+    part.setValue(lit_html_1.html(templateObject_5 || (templateObject_5 = __makeTemplateObject(["", ""], ["", ""])), content));
 }; });
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5;
 /*
 export const generateFormColumns = directive(
   (metadata: any, entity: any) => (part: Part) => {

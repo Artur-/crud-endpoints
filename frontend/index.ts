@@ -1,7 +1,6 @@
 import { Flow } from "@vaadin/flow-frontend/Flow";
 import { Router } from "@vaadin/router";
 import { MockDataType } from "./mocker";
-import "./my-view.src";
 
 const meta = {
   firstName: { type: "String", mockdata: MockDataType.FIRST_NAME },
@@ -15,11 +14,22 @@ const { serverSideRoutes } = new Flow({
 
 const routes = [
   {
-    path: "",
+    path: "preview",
     component: "my-view",
-    action: (_context: any, _commands: any) => {
+    action: async (_context: any, _commands: any) => {
+      await import("./my-view-preview");
       const view = _commands.component(_context.route.component);
-      view._entityMetadata = meta;
+      view.entityMetadata = meta;
+      return view;
+    },
+  },
+  {
+    path: "final",
+    component: "my-view",
+    action: async (_context: any, _commands: any) => {
+      await import("./my-view-final");
+      const view = _commands.component(_context.route.component);
+      view.entityMetadata = meta;
       return view;
     },
   },

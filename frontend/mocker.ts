@@ -1,3 +1,5 @@
+import { PreviewElement } from "./PreviewElement";
+
 const options = {
   firstName: [
     "Rowena",
@@ -96,15 +98,20 @@ const createMockData = (metadata: any) => {
   return data;
 };
 
-export const createMockEndpoint = (metadata: any) => {
-  let entities = createMockData(metadata);
-
+export const createMockEndpoint = (view: PreviewElement) => {
+  let entities: any[] = [];
   return {
     list: async () => {
+      if (entities.length == 0) {
+        entities = createMockData(view.entityMetadata);
+      }
       return entities;
     },
     update: async (entity: any) => {
       entities = entities.map((e) => (e.id == entity.id ? entity : e));
+    },
+    reset: () => {
+      entities = [];
     },
   };
 };

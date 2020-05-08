@@ -1,12 +1,10 @@
-import { css, customElement, html, LitElement, property } from "lit-element";
+import { css, customElement, html, property } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
-import Entity from "./ViewEntity";
-import * as Endpoint from "./ViewEndpoint";
-
 import { generateDiv } from "./generator";
+import { Entity, PreviewElement } from "./PreviewElement";
 
 @customElement("my-view")
-export class MyView extends LitElement {
+export class MyView extends PreviewElement {
   @property({ type: Array })
   items: Entity[] = [];
 
@@ -19,7 +17,7 @@ export class MyView extends LitElement {
         ${repeat(
           this.items,
           (item) => item.id,
-          (item) => html`${generateDiv(item, (this as any)._entityMetadata)}`
+          (item) => html`${generateDiv(item, this.entityMetadata)}`
         )}
       </div>
     `;
@@ -27,6 +25,6 @@ export class MyView extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.items = await Endpoint.list();
+    this.items = await this.Endpoint.list();
   }
 }

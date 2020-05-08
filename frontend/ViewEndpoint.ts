@@ -1,12 +1,12 @@
 import ViewEntity from "./ViewEntity";
 
-async function _delete(id: number): Promise<void> {
+async function _delete(_id: number): Promise<void> {
   return undefined;
 }
 export { _delete as delete };
 
 async function _get(id: number): Promise<ViewEntity | undefined> {
-  return { id: id, age: 12, firstName: "John", lastName: "Doe" };
+  return { id: id };
 }
 export { _get as get };
 

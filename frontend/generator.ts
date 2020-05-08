@@ -6,10 +6,12 @@ const camelCaseToHumanReadable = (camelCase: string): string => {
 
 export const generateDiv = directive(
   (entity: any, metadata: any) => (part: Part) => {
-    const contents = Object.keys(metadata).map((fieldName) => {
-      return html`<span>${entity[fieldName]}</span> `;
-    });
-
+    let contents = [html``];
+    if (metadata) {
+      contents = Object.keys(metadata).map((fieldName) => {
+        return html`<span>${entity[fieldName]}</span> `;
+      });
+    }
     part.setValue(html`<div>${contents}</div>`);
   }
 );

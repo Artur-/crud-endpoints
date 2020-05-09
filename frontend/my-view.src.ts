@@ -5,10 +5,10 @@ import {
   generateTableHeaders,
   generateTableRows,
 } from "./generator";
-import { Entity, PreviewElement } from "./PreviewElement";
+import { Entity, StarterView } from "./StarterView";
 
 @customElement("my-view")
-export class MyView extends PreviewElement {
+export class MyView extends StarterView {
   @property({ type: Array })
   items: Entity[] = [];
 

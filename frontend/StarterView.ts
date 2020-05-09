@@ -4,7 +4,7 @@ import { createMockEndpoint } from "./mocker";
 export type Entity = any;
 
 /* Element only used inside the wizard preview */
-export class PreviewElement extends LitElement {
+export class StarterView extends LitElement {
   @property({ type: Object })
   _entityMetadata: any;
 

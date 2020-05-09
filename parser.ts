@@ -69,11 +69,11 @@ const createTemplate = (
       // Remove generator imports
       codeChanges.push({ node: node, replacement: "" });
     }
-    if (type == Type.CODE && isImportForIdentifier(node, ["PreviewElement"])) {
+    if (type == Type.CODE && isImportForIdentifier(node, ["StarterView"])) {
       codeChanges.push({ node, replacement: "" });
     }
     if (type == Type.CODE && isImportForIdentifier(node, ["html"])) {
-      // Add LitElement if not there - typically only PreviewElement is imported
+      // Add LitElement if not there - typically only StarterView is imported
       if (!isImportForIdentifier(node, ["LitElement"])) {
         codeChanges.push({
           node,
@@ -86,7 +86,7 @@ const createTemplate = (
         heritage.types.forEach((type) => {
           if (
             ts.isIdentifier(type.expression) &&
-            type.expression.text == "PreviewElement"
+            type.expression.text == "StarterView"
           ) {
             codeChanges.push({
               node: type.expression,

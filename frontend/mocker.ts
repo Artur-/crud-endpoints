@@ -1,4 +1,4 @@
-import { PreviewElement } from "./PreviewElement";
+import { StarterView } from "./StarterView";
 
 const options = {
   firstName: [
@@ -98,7 +98,7 @@ const createMockData = (metadata: any) => {
   return data;
 };
 
-export const createMockEndpoint = (view: PreviewElement) => {
+export const createMockEndpoint = (view: StarterView) => {
   let entities: any[] = [];
   return {
     list: async () => {

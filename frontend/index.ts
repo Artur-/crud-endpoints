@@ -17,7 +17,7 @@ const routes = [
     path: "preview",
     component: "my-view",
     action: async (_context: any, _commands: any) => {
-      await import("./my-view-preview");
+      await import("./my-view");
       const view = _commands.component(_context.route.component);
       view.entityMetadata = meta;
       return view;
@@ -27,7 +27,7 @@ const routes = [
     path: "final",
     component: "my-view",
     action: async (_context: any, _commands: any) => {
-      await import("./my-view-final");
+      await import("./my-view-code");
       const view = _commands.component(_context.route.component);
       view.entityMetadata = meta;
       return view;

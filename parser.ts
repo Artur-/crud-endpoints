@@ -6,10 +6,6 @@ import {
   generateTableHeadersCode,
 } from "./frontend/generator";
 
-enum Type {
-  PREVIEW,
-  CODE,
-}
 interface CodeChange {
   node: ts.Node;
   replacement: string;
@@ -18,8 +14,7 @@ const createTemplate = (
   code: string,
   replacements: any,
   meta: any,
-  endpoint: any,
-  type: Type
+  endpoint: any
 ): string => {
   const codeChanges = [];
   const source = ts.createSourceFile(
@@ -62,17 +57,14 @@ const createTemplate = (
   };
 
   const visitor = (node: ts.Node) => {
-    if (
-      type == Type.CODE &&
-      isImportForIdentifier(node, Object.keys(replacements))
-    ) {
+    if (isImportForIdentifier(node, Object.keys(replacements))) {
       // Remove generator imports
       codeChanges.push({ node: node, replacement: "" });
     }
-    if (type == Type.CODE && isImportForIdentifier(node, ["StarterView"])) {
+    if (isImportForIdentifier(node, ["StarterView"])) {
       codeChanges.push({ node, replacement: "" });
     }
-    if (type == Type.CODE && isImportForIdentifier(node, ["html"])) {
+    if (isImportForIdentifier(node, ["html"])) {
       // Add LitElement if not there - typically only StarterView is imported
       if (!isImportForIdentifier(node, ["LitElement"])) {
         codeChanges.push({
@@ -81,7 +73,7 @@ const createTemplate = (
         });
       }
     }
-    if (type == Type.CODE && ts.isClassDeclaration(node)) {
+    if (ts.isClassDeclaration(node)) {
       node.heritageClauses.forEach((heritage) => {
         heritage.types.forEach((type) => {
           if (
@@ -116,9 +108,8 @@ const createTemplate = (
       }
       return undefined;
     };
-    // console.log(node.parent);
-    // console.log(getSource(node));
-    if (type == Type.CODE && ts.isTemplateSpan(node)) {
+
+    if (ts.isTemplateSpan(node)) {
       const exp = node.expression;
       const replacement = maybeReplaceMethodCall(exp);
       if (replacement) {
@@ -155,16 +146,14 @@ const createTemplate = (
 
   visit(source, visitor);
 
-  if (type == Type.CODE) {
-    codeChanges.push({
-      node: { pos: 0, end: 0 },
-      replacement: 'import Entity from "' + endpoint.entity + '";\n',
-    });
-    codeChanges.push({
-      node: { pos: 0, end: 0 },
-      replacement: 'import * as Endpoint from "' + endpoint.endpoint + '";\n',
-    });
-  }
+  codeChanges.push({
+    node: { pos: 0, end: 0 },
+    replacement: 'import Entity from "' + endpoint.entity + '";\n',
+  });
+  codeChanges.push({
+    node: { pos: 0, end: 0 },
+    replacement: 'import * as Endpoint from "' + endpoint.endpoint + '";\n',
+  });
   let newCode = source.getFullText();
 
   // Sort end to start so positions do not change while replacing
@@ -184,9 +173,7 @@ const createTemplate = (
       codeChange.replacement +
       newCode.substring(codeChange.node.end);
   });
-  if (type == Type.CODE) {
-    newCode = newCode.replace("this.Endpoint", "Endpoint");
-  }
+  newCode = newCode.replace("this.Endpoint", "Endpoint");
   return newCode;
 };
 
@@ -208,14 +195,10 @@ const createTemplate = (
     generateTableHeaders: generateTableHeadersCode,
   };
 
-  const originalCode = fs.readFileSync("./frontend/my-view.src.ts", "utf8");
+  const originalCode = fs.readFileSync("./frontend/my-view.ts", "utf8");
 
   fs.writeFileSync(
-    "./frontend/my-view-preview.ts",
-    createTemplate(originalCode, replacements, meta, {}, Type.PREVIEW)
-  );
-  fs.writeFileSync(
-    "./frontend/my-view-final.ts",
-    createTemplate(originalCode, replacements, meta, endpoint, Type.CODE)
+    "./frontend/my-view-code.ts",
+    createTemplate(originalCode, replacements, meta, endpoint)
   );
 }

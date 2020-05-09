@@ -23,27 +23,34 @@ exports.generateDivCode = function (propertyName, metadata) {
     });
     return "<div>" + content.join("") + "</div>";
 };
-exports.generateGridColumns = lit_html_1.directive(function (metadata) { return function (part) {
-    var content = Object.keys(metadata).map(function (fieldName) {
-        return lit_html_1.html(templateObject_4 || (templateObject_4 = __makeTemplateObject([" <vaadin-grid-column\n        path=\"", "\"\n        header=\"", "\"\n      ></vaadin-grid-column>"], [" <vaadin-grid-column\n        path=\"", "\"\n        header=\"", "\"\n      ></vaadin-grid-column>"])), fieldName, camelCaseToHumanReadable(fieldName));
-    });
-    part.setValue(lit_html_1.html(templateObject_5 || (templateObject_5 = __makeTemplateObject(["", ""], ["", ""])), content));
+exports.generateTableRows = lit_html_1.directive(function (entity, metadata) { return function (part) {
+    var contents = [lit_html_1.html(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])))];
+    if (metadata) {
+        contents = Object.keys(metadata).map(function (fieldName) {
+            return lit_html_1.html(templateObject_5 || (templateObject_5 = __makeTemplateObject(["<td>", "</td> "], ["<td>", "</td> "])), entity[fieldName]);
+        });
+    }
+    part.setValue(lit_html_1.html(templateObject_6 || (templateObject_6 = __makeTemplateObject(["<tr>\n        ", "\n      </tr>"], ["<tr>\n        ", "\n      </tr>"])), contents));
 }; });
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5;
-/*
-export const generateFormColumns = directive(
-  (metadata: any, entity: any) => (part: Part) => {
-    const content = Object.keys(metadata).map((fieldName) => {
-      return html`<vaadin-form-item>
-        <label slot="label">${camelCaseToHumanReadable(fieldName)}</label>
-        <vaadin-text-field
-          class="full-width"
-          value="${this.firstName}"
-        ></vaadin-text-field>
-      </vaadin-form-item> `;
+exports.generateTableRowsCode = function (propertyName, metadata) {
+    var content = Object.keys(metadata).map(function (fieldName) {
+        return "<td>${" + propertyName + "." + fieldName + "}</td>";
     });
-
-    part.setValue(html`${content}`);
-  }
-);
-*/
+    return "<tr>" + content.join("") + "</tr>";
+};
+exports.generateTableHeaders = lit_html_1.directive(function (metadata) { return function (part) {
+    var contents = [lit_html_1.html(templateObject_7 || (templateObject_7 = __makeTemplateObject([""], [""])))];
+    if (metadata) {
+        contents = Object.keys(metadata).map(function (fieldName) {
+            return lit_html_1.html(templateObject_8 || (templateObject_8 = __makeTemplateObject(["<th>", "</th> "], ["<th>", "</th> "])), camelCaseToHumanReadable(fieldName));
+        });
+    }
+    part.setValue(lit_html_1.html(templateObject_9 || (templateObject_9 = __makeTemplateObject(["<tr>\n        ", "\n      </tr>"], ["<tr>\n        ", "\n      </tr>"])), contents));
+}; });
+exports.generateTableHeadersCode = function (metadata) {
+    var content = Object.keys(metadata).map(function (fieldName) {
+        return "<th>" + fieldName + "</th>";
+    });
+    return "<tr>" + content.join("") + "</tr>";
+};
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9;

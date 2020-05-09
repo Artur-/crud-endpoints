@@ -1,6 +1,10 @@
 import { css, customElement, html, property } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
-import { generateDiv } from "./generator";
+import {
+  generateDiv,
+  generateTableHeaders,
+  generateTableRows,
+} from "./generator";
 import { Entity, PreviewElement } from "./PreviewElement";
 
 @customElement("my-view")
@@ -20,6 +24,14 @@ export class MyView extends PreviewElement {
           (item) => html`${generateDiv(item, this.entityMetadata)}`
         )}
       </div>
+      <table>
+        ${generateTableHeaders(this.entityMetadata)}
+        ${repeat(
+          this.items,
+          (item) => item.id,
+          (item) => html`${generateTableRows(item, this.entityMetadata)}`
+        )}
+      </table>
     `;
   }
   async connectedCallback() {

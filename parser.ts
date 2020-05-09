@@ -1,6 +1,10 @@
 const fs = require("fs");
 import * as ts from "typescript";
-import { generateDivCode } from "./frontend/generator";
+import {
+  generateDivCode,
+  generateTableRowsCode,
+  generateTableHeadersCode,
+} from "./frontend/generator";
 
 enum Type {
   PREVIEW,
@@ -93,17 +97,51 @@ const createTemplate = (
       });
     }
 
-    if (type == Type.CODE && ts.isTemplateExpression(node)) {
-      // Replace generator calls with result
-      const templateExp = node as ts.TemplateExpression;
-      const exp: any = templateExp.templateSpans[0].expression;
+    const maybeReplaceMethodCall = (exp: ts.Expression): string | undefined => {
+      if (!ts.isCallExpression(exp)) {
+        return undefined;
+      }
+      if (!ts.isIdentifier(exp.expression)) {
+        return;
+      }
       const functionName = exp.expression.text;
-      const argumentNames = exp.arguments.map((node) => node.text);
+      const argumentNames = exp.arguments.map((node: any) => node.text);
 
       if (replacements[functionName]) {
-        const replacement =
-          "`" + replacements[functionName](argumentNames[0], meta) + "`";
-        codeChanges.push({ node, replacement });
+        if (argumentNames[0]) {
+          return replacements[functionName](argumentNames[0], meta);
+        } else {
+          return replacements[functionName](meta);
+        }
+      }
+      return undefined;
+    };
+    // console.log(node.parent);
+    // console.log(getSource(node));
+    if (type == Type.CODE && ts.isTemplateSpan(node)) {
+      const exp = node.expression;
+      const replacement = maybeReplaceMethodCall(exp);
+      if (replacement) {
+        // console.log(node);
+        const fullSourceInput = source.getFullText();
+        // Find and include the previous "${"
+        const modify = { pos: exp.pos, end: exp.end };
+        for (let i = exp.pos; i >= 0; i--) {
+          if (
+            fullSourceInput.charAt(i) == "{" &&
+            fullSourceInput.charAt(i - 1) == "$"
+          ) {
+            modify.pos = i - 1;
+            break;
+          }
+        }
+        for (let i = exp.end; i <= fullSourceInput.length; i++) {
+          if (fullSourceInput.charAt(i) == "}") {
+            modify.end = i + 1;
+            break;
+          }
+        }
+        codeChanges.push({ node: modify, replacement });
       }
     }
   };
@@ -146,7 +184,9 @@ const createTemplate = (
       codeChange.replacement +
       newCode.substring(codeChange.node.end);
   });
-  newCode = newCode.replace("this.Endpoint", "Endpoint");
+  if (type == Type.CODE) {
+    newCode = newCode.replace("this.Endpoint", "Endpoint");
+  }
   return newCode;
 };
 
@@ -164,6 +204,8 @@ const createTemplate = (
   };
   const replacements = {
     generateDiv: generateDivCode,
+    generateTableRows: generateTableRowsCode,
+    generateTableHeaders: generateTableHeadersCode,
   };
 
   const originalCode = fs.readFileSync("./frontend/my-view.src.ts", "utf8");

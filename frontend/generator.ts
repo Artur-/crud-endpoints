@@ -26,33 +26,52 @@ export const generateDivCode = (
 
   return `<div>${content.join("")}</div>`;
 };
+export const generateTableRows = directive(
+  (entity: any, metadata: any) => (part: Part) => {
+    let contents = [html``];
+    if (metadata) {
+      contents = Object.keys(metadata).map((fieldName) => {
+        return html`<td>${entity[fieldName]}</td> `;
+      });
+    }
+    part.setValue(
+      html`<tr>
+        ${contents}
+      </tr>`
+    );
+  }
+);
 
-export const generateGridColumns = directive(
+export const generateTableRowsCode = (
+  propertyName: string,
+  metadata: any
+): string => {
+  const content = Object.keys(metadata).map((fieldName) => {
+    return "<td>${" + propertyName + "." + fieldName + "}</td>";
+  });
+
+  return `<tr>${content.join("")}</tr>`;
+};
+export const generateTableHeaders = directive(
   (metadata: any) => (part: Part) => {
-    const content = Object.keys(metadata).map((fieldName) => {
-      return html` <vaadin-grid-column
-        path="${fieldName}"
-        header="${camelCaseToHumanReadable(fieldName)}"
-      ></vaadin-grid-column>`;
-    });
-
-    part.setValue(html`${content}`);
+    let contents = [html``];
+    if (metadata) {
+      contents = Object.keys(metadata).map((fieldName) => {
+        return html`<th>${camelCaseToHumanReadable(fieldName)}</th> `;
+      });
+    }
+    part.setValue(
+      html`<tr>
+        ${contents}
+      </tr>`
+    );
   }
 );
-/*
-export const generateFormColumns = directive(
-  (metadata: any, entity: any) => (part: Part) => {
-    const content = Object.keys(metadata).map((fieldName) => {
-      return html`<vaadin-form-item>
-        <label slot="label">${camelCaseToHumanReadable(fieldName)}</label>
-        <vaadin-text-field
-          class="full-width"
-          value="${this.firstName}"
-        ></vaadin-text-field>
-      </vaadin-form-item> `;
-    });
 
-    part.setValue(html`${content}`);
-  }
-);
-*/
+export const generateTableHeadersCode = (metadata: any): string => {
+  const content = Object.keys(metadata).map((fieldName) => {
+    return "<th>" + fieldName + "</th>";
+  });
+
+  return `<tr>${content.join("")}</tr>`;
+};
